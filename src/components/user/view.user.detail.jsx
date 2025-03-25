@@ -9,7 +9,9 @@ const ViewUserDetail = (props) => {
     } = props;
 
     return (
-        <Drawer title=" Chi tiết "
+        <Drawer
+            width={"50vw"}
+            title=" Chi tiết "
             onClose={() => {
                 setDataDetail(null),
                     setIsDetailOpen(false);
@@ -38,8 +40,33 @@ const ViewUserDetail = (props) => {
                         {dataDetail.phone}
                     </div>
 
-                </div>
+                    <div>
+                        <span>Avatar: </span>
 
+                    </div>
+
+                    <div>
+                        <img
+                            height={100} width={130} src={`${import.meta.env.VITE_BACKEND_URL}/images/avatar/${dataDetail.avatar}`} />
+                    </div>
+                    <div>
+                        <label htmlFor="btnUpload"
+                            style={{
+                                display: "block",
+                                width: "fit-content",
+                                marginTop: "15px",
+                                padding: "5px 10px",
+                                background: "orange",
+                                borderRadius: "5px",
+                                cursor: "pointer"
+                            }}>
+                            Upload Avatar
+                        </label>
+                        <input type='file' hidden id="btnUpload" />
+                    </div>
+
+                </div>
+                {/* <button type="primary">Upload Avatar</button> */}
             </>
                 :
                 <>
