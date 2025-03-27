@@ -26,8 +26,8 @@ const UpdateUserAPI = (_id, fullName, phone) => {
 
 }
 
-const fetchAllUserAPI = () => {
-    const URL_BACKEND = "/api/v1/user?current=1&pageSize=1";
+const fetchAllUserAPI = (current, pageSize) => {
+    const URL_BACKEND = `/api/v1/user?current=${current}&pageSize=${pageSize}`;
     return axios.get(URL_BACKEND);
 }
 const deleteUserAPI = (id) => {
