@@ -1,13 +1,15 @@
 import { UnderlineOutlined } from "@ant-design/icons";
-import { Drawer } from "antd";
+import { Drawer, notification } from "antd";
 import { useState } from "react";
+import { UpdateUserAPI, handleUploadFile, updateUserAvatarAPI } from "../../services/api.service";
 
 const ViewUserDetail = (props) => {
     const {
         dataDetail,
         setDataDetail,
         isDetailOpen,
-        setIsDetailOpen
+        setIsDetailOpen,
+        loadUser
     } = props;
 
     const [selectedFile, setSelectedFile] = useState(null);
@@ -26,8 +28,43 @@ const ViewUserDetail = (props) => {
         }
 
     }
+    const handleUpdateUserAvatar = async () => {
+        const resUpload = await handleUploadFile(selectedFile, "avatar");
+        if (resUpload.data) {
+            //success
+            const newAvatar = resUpload.data.fileUploaded;
+            const resUpdateAvatar = await updateUserAvatarAPI(
+                newAvatar,
+                dataDetail._id,
+                dataDetail.fullName,
+                dataDetail.phone
+            );
+            if (resUpdateAvatar.data) {
+                setIsDetailOpen(false);
+                setSelectedFile(null);
+                setPreview(null);
+                await loadUser();
 
-    console.log("checkkkk>>>>>>>", preview);
+                notification.success({
+                    message: "update user avatar ",
+                    description: "cap nhat avatar thanh cong "
+                })
+            } else {
+                notification.error({
+                    message: "erros update avatar file",
+                    description: JSON.stringify(resUpdateAvatar.message)
+                })
+            }
+        } else {
+            //failed
+            notification.error({
+                message: "erros uploaf file",
+                description: JSON.stringify(resUpload.message)
+            })
+
+        }
+
+    }
     return (
         <Drawer
             width={"50vw"}
@@ -101,17 +138,26 @@ const ViewUserDetail = (props) => {
 
 
                 {preview &&
-                    <div style={{
-                        marginTop: "10px",
-                        height: "100px",
-                        width: "150px",
-                        border: "1px solid #ccc"
 
-                    }}>
-                        <img
-                            style={{ height: "100%", width: "100%", objectFit: "contain" }}
-                            src={preview} />
-                    </div>}
+                    <>
+                        <div style={{
+                            marginTop: "10px",
+                            height: "100px",
+                            width: "150px"
+
+                        }}>
+                            <img
+                                style={{ height: "100%", width: "100%", objectFit: "contain" }}
+                                src={preview} />
+                        </div>
+                        <button type="primary"
+                            onClick={() => handleUpdateUserAvatar()} >
+                            save
+                        </button>
+
+                    </>
+
+                }
 
             </>
                 :
