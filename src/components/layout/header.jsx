@@ -1,8 +1,9 @@
 import { Link, NavLink } from 'react-router-dom';
 // import './header.css';
 import { Menu } from 'antd';
-import { UsergroupAddOutlined, HomeOutlined, FrownOutlined } from '@ant-design/icons';
+import { UsergroupAddOutlined, HomeOutlined, FrownOutlined, AuditOutlined, SettingFilled } from '@ant-design/icons';
 import { useState } from 'react';
+import { Children } from 'react';
 const Header = () => {
     const [current, setCurrent] = useState('');
     const onClick = (e) => {
@@ -24,8 +25,24 @@ const Header = () => {
         {
             label: <Link to={"/books"}>Books</Link>,
             key: 'books',
-            icon: <FrownOutlined />,
+            icon: <AuditOutlined />,
 
+        },
+
+        {
+            label: 'Cài đặt',
+            key: 'setting',
+            icon: <SettingFilled />,
+            children: [
+                {
+                    label: <Link to={"/login"}>Đăng nhập</Link>,
+                    key: 'login',
+                },
+                {
+                    label: 'Đăng xuất',
+                    key: 'logout',
+                },
+            ],
         },
 
     ];
