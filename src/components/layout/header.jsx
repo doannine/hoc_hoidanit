@@ -2,10 +2,14 @@ import { Link, NavLink } from 'react-router-dom';
 // import './header.css';
 import { Menu } from 'antd';
 import { UsergroupAddOutlined, HomeOutlined, FrownOutlined, AuditOutlined, SettingFilled } from '@ant-design/icons';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { Children } from 'react';
+import { AuthContext } from '../context/auth.context';
 const Header = () => {
     const [current, setCurrent] = useState('');
+
+    const { user } = useContext(AuthContext);
+    console.log("checkk>>>>", user)
     const onClick = (e) => {
         console.log('click ', e);
         setCurrent(e.key);

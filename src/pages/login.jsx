@@ -1,17 +1,17 @@
-
-
 import { Button, Row, notification, Col, Divider, message } from 'antd';
-
 import { Input, Form } from "antd";
 import { loginAPI } from '../services/api.service';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowDownOutlined } from '@ant-design/icons';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
+import { AuthContext } from '../components/context/auth.context';
 
 const LoginPage = () => {
-
+    const navigate = useNavigate();
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
+
+    const { setUser } = useContext(AuthContext);
 
     const onFinish = async (values) => {
         setLoading(true)
@@ -24,6 +24,10 @@ const LoginPage = () => {
 
         if (res.data) {
             message.success("dang nhap thanh cong")
+            localStorage.setItem("access_token", res.data.access_token);
+            setUser(res.data.user);
+            navigate("/");
+
         } else {
             notification.error({
                 message: "dang nhap khong thanh cong",
@@ -31,6 +35,7 @@ const LoginPage = () => {
 
             })
         }
+        setLoading(false)
     }
     return (
 
