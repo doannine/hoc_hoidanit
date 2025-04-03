@@ -124,7 +124,7 @@ const UserTable = (props) => {
 
 
 
-        console.log("check>>>", pagination, filters, sorter, extra)
+
     };
 
     return (

@@ -9,7 +9,7 @@ const Header = () => {
     const [current, setCurrent] = useState('');
 
     const { user } = useContext(AuthContext);
-    console.log("checkk>>>>", user)
+
     const onClick = (e) => {
         console.log('click ', e);
         setCurrent(e.key);
