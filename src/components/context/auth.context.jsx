@@ -10,7 +10,7 @@ export const AuthContext = createContext({
 });
 export const AuthWrapper = (props) => {
     const [user, setUser] = useState({
-        mail: "",
+        email: "",
         phone: "",
         fullName: "",
         role: "",
