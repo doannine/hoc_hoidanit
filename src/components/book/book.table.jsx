@@ -1,32 +1,33 @@
-import { Table, notification, Popconfirm, Button } from 'antd';
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-// import UpdateUserModal from './update.user.modal';
-import { useEffect, useState } from 'react';
-import ViewBookDetail from './view.book.detail';
-import { deleteUserAPI, fetchAllBookAPI } from '../../services/api.service';
-import BookForm from './create.book.control';
-// import CreateBookControl from './create.book.control';
-import CreateBookUnControl from './create.book.uncontrol';
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { Button, Popconfirm, Table, notification } from "antd";
+import { useCallback, useEffect, useState } from "react";
+import { deleteBookAPI, fetchAllBookAPI } from "../../services/api.service";
+import ViewBookDetail from "./view.book.detail";
+import CreateBookControl from "./create.book.control";
+import CreateBookUncontrol from "./create.book.uncontrol";
+import UpdateBookControl from "./update.book.control";
+//import UpdateBookUncontrol from "./update.book.uncontrol";
 
 const BookTable = () => {
+
     const [dataBook, setDataBook] = useState([]);
     const [current, setCurrent] = useState(1);
     const [pageSize, setPageSize] = useState(5);
     const [total, setTotal] = useState(0);
 
-
-    const [isModalUpdateOpen, SetIsModalUpdateOpen] = useState(false);
-    const [dataUpdate, setDataUpdate] = useState(null);
-
     const [dataDetail, setDataDetail] = useState(null);
     const [isDetailOpen, setIsDetailOpen] = useState(false);
 
+    const [dataUpdate, setDataUpdate] = useState(null);
+
+    const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
+
     const [isCreateOpen, setIsCreateOpen] = useState(false);
 
-    useEffect(() => {
-        loadBook();
-    }, [current, pageSize])
-    const loadBook = async () => {
+    const [loadingTable, setLoadingTable] = useState(false);
+
+    const loadBook = useCallback(async () => {
+        setLoadingTable(true)
         const res = await fetchAllBookAPI(current, pageSize);
         if (res.data) {
             setDataBook(res.data.result);
@@ -34,25 +35,60 @@ const BookTable = () => {
             setPageSize(res.data.meta.pageSize);
             setTotal(res.data.meta.total);
         }
+        setLoadingTable(false)
+    }, [current, pageSize])
+
+    useEffect(() => {
+        loadBook();
+    }, [loadBook])
+
+
+
+
+    const handleDeleteBook = async (id) => {
+        const res = await deleteBookAPI(id);
+        if (res.data) {
+            notification.success({
+                message: "Delete book",
+                description: "Xóa book thành công"
+            })
+            await loadBook();
+
+        } else {
+            notification.error({
+                message: "Error delete book",
+                description: JSON.stringify(res.message)
+            })
+        }
     }
 
+    const onChange = (pagination, filters, sorter, extra) => {
+        // setCurrent, setPageSize
+        //nếu thay đổi trang : current
+        if (pagination && pagination.current) {
+            if (+pagination.current !== +current) {
+                setCurrent(+pagination.current) //"5" => 5
+            }
+        }
 
-
-
+        //nếu thay đổi tổng số phần tử : pageSize
+        if (pagination && pagination.pageSize) {
+            if (+pagination.pageSize !== +pageSize) {
+                setPageSize(+pagination.pageSize) //"5" => 5
+            }
+        }
+    };
 
     const columns = [
         {
             title: "STT",
             render: (_, record, index) => {
                 return (
-                    <>
-                        {
-                            (index + 1) + (current - 1) * pageSize
-                        }
-                    </>
+                    <>{(index + 1) + (current - 1) * pageSize}</>
                 )
             }
         },
+
         {
             title: 'Id',
             dataIndex: '_id',
@@ -71,7 +107,6 @@ const BookTable = () => {
         {
             title: 'Tiêu đề',
             dataIndex: 'mainText',
-
         },
         {
             title: 'Giá tiền',
@@ -79,22 +114,20 @@ const BookTable = () => {
             render: (text, record, index, action) => {
                 if (text)
                     return new Intl.NumberFormat('vi-VN',
-                        {
-                            style: 'currency', currency: 'VND'
-                        }).format(text)
-            }
+                        { style: 'currency', currency: 'VND' }).format(text)
 
+            },
         },
         {
             title: 'Số lượng',
             dataIndex: 'quantity',
-
         },
+
         {
-            title: 'Tác giả ',
+            title: 'Tác giả',
             dataIndex: 'author',
-
         },
+
         {
             title: 'Action',
             key: 'action',
@@ -103,68 +136,23 @@ const BookTable = () => {
                     <EditOutlined
                         onClick={() => {
                             setDataUpdate(record);
-                            SetIsModalUpdateOpen(true);
+                            setIsModalUpdateOpen(true);
                         }}
                         style={{ cursor: "pointer", color: "orange" }} />
                     <Popconfirm
-                        title="Delete boook"
-                        description="Are you sure to delete book?"
+                        title="Xóa book"
+                        description="Bạn chắc chắn xóa book này ?"
                         onConfirm={() => handleDeleteBook(record._id)}
                         okText="Yes"
                         cancelText="No"
                         placement="left"
                     >
-                        <DeleteOutlined
-                            style={{ cursor: "pointer", color: "red" }}
-                        />
+                        <DeleteOutlined style={{ cursor: "pointer", color: "red" }} />
                     </Popconfirm>
                 </div>
-
-
             ),
         },
-
     ];
-
-    const handleDeleteBook = async (id) => {
-        // const res = await deleteUserAPI(id);
-        // if (res.data) {
-        //     notification.success({
-        //         message: "Delete book",
-        //         description: " xóa book thành công "
-        //     })
-        //     await loadUser();
-
-        // } else {
-        //     notification.error({
-        //         message: "Error delete book",
-        //         description: "Xóa book k thành công"
-        //     })
-        // }
-    }
-
-    const onChange = (pagination, filters, sorter, extra) => {
-        //setCurrent,setPageSize
-        //nếu thay đổi trang : current
-        if (pagination && pagination.current) {
-            if (+pagination.current !== +current) {
-                setCurrent(+pagination.current)
-            }
-        }
-
-
-        //nếu thay đổi tổng số phần tử  : pagesixe
-        if (pagination && pagination.pageSize) {
-            if (+pagination.pageSize !== +pageSize) {
-                setPageSize(+pagination.pageSize)
-            }
-        }
-
-
-
-
-
-    };
 
     return (
         <>
@@ -176,18 +164,6 @@ const BookTable = () => {
                 <h3>Table Book</h3>
                 <Button type="primary" onClick={() => setIsCreateOpen(true)}>Create Book</Button>
             </div>
-
-
-
-            {/* <CreateBookControl
-                isCreateOpen={isCreateOpen}
-                setIsCreateOpen={setIsCreateOpen}
-                loadBook={loadBook} /> */}
-
-            <CreateBookUnControl
-                isCreateOpen={isCreateOpen}
-                setIsCreateOpen={setIsCreateOpen}
-                loadBook={loadBook} />
 
             <Table
                 columns={columns}
@@ -203,20 +179,43 @@ const BookTable = () => {
                     }
                 }
                 onChange={onChange}
+                loading={loadingTable}
             />
-            {/* <UpdateUserModal
-                isModalUpdateOpen={isModalUpdateOpen}
-                SetIsModalUpdateOpen={SetIsModalUpdateOpen}
-                dataUpdate={dataUpdate}
-                setDataUpdate={setDataUpdate}
-                loadBook={loadBook}
-            /> */}
+
             <ViewBookDetail
                 dataDetail={dataDetail}
                 setDataDetail={setDataDetail}
                 isDetailOpen={isDetailOpen}
                 setIsDetailOpen={setIsDetailOpen}
             />
+
+            {/* <CreateBookControl
+                isCreateOpen={isCreateOpen}
+                setIsCreateOpen={setIsCreateOpen}
+                loadBook={loadBook}
+            /> */}
+            <CreateBookUncontrol
+                isCreateOpen={isCreateOpen}
+                setIsCreateOpen={setIsCreateOpen}
+                loadBook={loadBook}
+            />
+
+            <UpdateBookControl
+                dataUpdate={dataUpdate}
+                setDataUpdate={setDataUpdate}
+                isModalUpdateOpen={isModalUpdateOpen}
+                setIsModalUpdateOpen={setIsModalUpdateOpen}
+                loadBook={loadBook}
+            />
+
+            {/* <UpdateBookUncontrol
+                dataUpdate={dataUpdate}
+                setDataUpdate={setDataUpdate}
+                isModalUpdateOpen={isModalUpdateOpen}
+                setIsModalUpdateOpen={setIsModalUpdateOpen}
+                loadBook={loadBook}
+            /> */}
+
         </>
     )
 }
