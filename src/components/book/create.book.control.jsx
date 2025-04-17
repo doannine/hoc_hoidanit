@@ -168,6 +168,7 @@ const CreateBookControl = (props) => {
                             Ảnh thumbnail
                         </div>
                         <label htmlFor='btnUpload' style={{
+                            width: "50px",
                             display: "block",
                             with: "fit-content",
                             marginTop: "15px",

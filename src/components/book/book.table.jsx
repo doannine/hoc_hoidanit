@@ -5,8 +5,8 @@ import { useEffect, useState } from 'react';
 import ViewBookDetail from './view.book.detail';
 import { deleteUserAPI, fetchAllBookAPI } from '../../services/api.service';
 import BookForm from './create.book.control';
-import CreateBookControl from './create.book.control';
-
+// import CreateBookControl from './create.book.control';
+import CreateBookUnControl from './create.book.uncontrol';
 
 const BookTable = () => {
     const [dataBook, setDataBook] = useState([]);
@@ -168,15 +168,23 @@ const BookTable = () => {
 
     return (
         <>
-            {/* <div style={{
-                marginTop: "10px",
+            <div style={{
+                margin: "10px 0",
                 display: "flex",
                 justifyContent: "space-between"
             }}>
                 <h3>Table Book</h3>
-                <Button type="primary">Create Book</Button>
-            </div> */}
-            <CreateBookControl
+                <Button type="primary" onClick={() => setIsCreateOpen(true)}>Create Book</Button>
+            </div>
+
+
+
+            {/* <CreateBookControl
+                isCreateOpen={isCreateOpen}
+                setIsCreateOpen={setIsCreateOpen}
+                loadBook={loadBook} /> */}
+
+            <CreateBookUnControl
                 isCreateOpen={isCreateOpen}
                 setIsCreateOpen={setIsCreateOpen}
                 loadBook={loadBook} />
